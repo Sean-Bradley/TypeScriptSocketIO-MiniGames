@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+      "target": "ES3",
+      "module": "commonjs",
+      "outDir": "../../dist/client"
+    },
+    "include": [
+      "**/*.ts"
+    ]
+  }

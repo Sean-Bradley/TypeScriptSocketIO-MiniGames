@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>TypeScript Socket.IO Course</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <style>
+        .timer {
+            font-size: 4em;
+            position: absolute;
+            right: 15px;
+            top: -15px;
+        }
+
+        .gamephase {
+            font-size: 1.75em;
+        }
+
+        .playerGuess {
+            font-size: 1.5em;
+        }
+
+        .goodLuckMessage {
+            font-size: 1.5em;
+            padding-left: 10px;
+            display: none;
+        }
+
+        /* The progress container (grey background) */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: #ccc;
+            margin-top: 40px;
+            border: solid 1px gray;
+        }
+
+        /* The progress bar (scroll indicator) */
+        .progress-bar {
+            height: 8px;
+            background: #4caf50;
+            width: 0%;
+        }
+
+        .gamePanel {
+            position: relative;
+            border: solid 1px gray;
+            height: 382px;
+            border-radius: 0px 20px 4px 20px;
+            box-shadow: 15px 10px #dddddd;
+        }
+
+        #gamePanel0 {
+            display: block;
+            background: linear-gradient(56deg, rgba(195, 112, 34, 0.492) 0%, rgba(156, 200, 105, 0.495) 100%);
+        }
+
+        #gamePanel1 {
+            display: none;
+            background: linear-gradient(56deg, rgba(225, 238, 255, 0.492) 0%, rgba(122, 67, 250, 0.495) 100%);
+        }
+
+        #gamePanel2 {
+            display: none;
+            background: linear-gradient(56deg, rgba(235, 204, 32, 0.492) 0%, rgba(251, 188, 106, 0.495) 100%);
+        }
+
+        .chatPanel {
+            border: solid 1px gray;
+            border-radius: 20px 0px 4px 4px;
+            box-shadow: 15px 10px #dddddd;
+            background: rgb(34, 193, 195);
+            background: linear-gradient(56deg, rgba(34, 193, 195, 0.49193275943189773) 0%, rgba(253, 187, 45, 0.494733879880077) 100%);
+            position: relative;
+        }
+
+        .chatMessageInputDiv {
+            position: absolute;
+            bottom: 0px;
+            width: 100%;
+        }
+
+        .messages {
+            padding-left: 0;
+            overflow: hidden;
+            height: 340px;
+            margin-bottom: 40px;
+        }
+
+        .messages li {
+            list-style-type: none;
+            margin-bottom: 30px;
+            padding: 6px 6px 6px 6px;
+            display: block
+        }
+
+        .otherMessage {
+            background: #ffcda3;
+            border: solid 1px gray;
+            margin: 0px 5px 5px 0px;
+            float: right;
+            padding: 0px 6px 0px 6px;
+            border-radius: 10px 10px 0 10px;
+        }
+
+        .myMessage {
+            background: #1bffbb;
+            border: solid 1px gray;
+            margin: 0px 5px 5px 5px;
+            float: left;
+            padding: 0px 6px 0px 6px;
+            border-radius: 10px 10px 10px 0;
+        }
+
+        .gameMessage {
+            background: #1babff;
+            border: solid 1px gray;
+            margin: 0px 5px 5px 5px;
+            float: left;
+            padding: 0px 6px 0px 6px;
+            border-radius: 10px 10px 10px 0;
+        }
+
+        .screenName {
+            padding: 6px 6px 6px 6px;
+            border-radius: 10px 10px 10px 10px;
+            font-weight: bold;
+            background: #1bffbb;
+        }
+
+        .score {
+            padding: 6px 6px 6px 6px;
+            border-radius: 10px 10px 10px 10px;
+            font-weight: bold;
+            background: #1bffbb;
+        }
+
+        .circle {
+            padding: 6px;
+            background: gray;
+            border-radius: 50px;
+        }
+
+        .resultValue {
+            font-size: 3.5em;
+            width: 100%;
+            text-align: center;
+        }
+
+        @keyframes spinner {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .spinner:before {
+            content: '';
+            box-sizing: border-box;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 90px;
+            height: 90px;
+            margin-top: -45px;
+            margin-left: -45px;
+            border-radius: 50%;
+            border: 10px solid #f6f;
+            border-top-color: #0e0;
+            border-right-color: #0dd;
+            border-bottom-color: #f90;
+            animation: spinner .6s linear infinite;
+        }
+
+        .jumbotron {
+            margin-top: -40px;
+            height: 180px;
+        }
+
+        .footer {
+            margin-top: 10px;
+        }
+
+        @keyframes glowing {
+            0% {
+                background-color: #2ba805;
+                box-shadow: 0 0 5px #2ba805;
+            }
+
+            50% {
+                background-color: #ff0080;
+                box-shadow: 0 0 20px #ffa600;
+            }
+
+            100% {
+                background-color: #2ba805;
+                box-shadow: 0 0 5px #2ba805;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="jumbotron text-center" style="margin-bottom:0">
+        <h1>Lucky Numbers Mini-Games</h1>
+        <p><a href="https://tssocktutorials.seanwasere.com" target="_blank">https://tssocktutorials.seanwasere.com</a>
+        </p>
+    </div>
+
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+        <a class="navbar-brand" href="#">Games</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="client.showGame(0)">🥉Bronze Game</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="client.showGame(1)">🥈Silver Game</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="client.showGame(2)">🥇Gold Game</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container" style="margin-top:30px">
+        <div class="row">
+            <div class="col-sm-8">
+                <div class="gamePanel" id="gamePanel0">
+                    <h2 id="gameTitle">🥉Bronze Game</h2>
+                    <span id="timer0" class="timer"></span>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="timerBar0"></div>
+                    </div>
+
+                    <div id="gamephase0" class="gamephase p-2">Choose Your Number</div>
+
+                    <div class="p-2">Your Screen Name is <span class="screenName"></span>, and your Score is <span
+                            class="score"></span></div>
+                    <div class="p-2">Your guesses
+                        <button class="button btn btn-success" onClick="client.submitGuess(0,1)"
+                            id="submitButton00">1</button>
+                        <button class="button btn btn-success" onClick="client.submitGuess(0,2)"
+                            id="submitButton01">2</button>
+                        <button class="button btn btn-success" onClick="client.submitGuess(0,3)"
+                            id="submitButton02">3</button>
+                        <button class="button btn btn-success" onClick="client.submitGuess(0,4)"
+                            id="submitButton03">4</button>
+                        <button class="button btn btn-success" onClick="client.submitGuess(0,5)"
+                            id="submitButton04">5</button>
+                        <button class="button btn btn-success" onClick="client.submitGuess(0,6)"
+                            id="submitButton05">6</button>
+                        <button class="button btn btn-success" onClick="client.submitGuess(0,7)"
+                            id="submitButton06">7</button>
+                        <button class="button btn btn-success" onClick="client.submitGuess(0,8)"
+                            id="submitButton07">8</button>
+                        <button class="button btn btn-success" onClick="client.submitGuess(0,9)"
+                            id="submitButton08">9</button>
+                        <button class="button btn btn-success" onClick="client.submitGuess(0,10)"
+                            id="submitButton09">10</button>
+                        <span id="goodLuckMessage0" class="goodLuckMessage">Good Luck 🤞</span>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="m-2">
+                                <div id="resultAlert0" class="alert alert-info" role="alert">
+                                    <h1 class="alert-heading p-1 resultValue" id="resultValue0"></h1>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="m-2">
+                                <div id="winnerAlert0" class="alert alert-success p-3" role="alert">
+                                    <h4 class="alert-heading">You Win! 🏆</h4>
+                                    <p>You guessed the correct number</p>
+                                </div>
+                                <div id="looserAlert0" class="alert alert-danger p-3" role="alert">
+                                    <h4 class="alert-heading">You Loose! 👎</h4>
+                                    <p>You guessed incorrectly. Get back on your 🐎</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="gamePanel" id="gamePanel1">
+                    <h2 id="gameTitle">🥈Silver Game</h2>
+                    <span id="timer1" class="timer"></span>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="timerBar1"></div>
+                    </div>
+                    <div id="gamephase1" class="gamephase p-2">Choose Your Number</div>
+                    <div class="p-2">Your Screen Name is <span class="screenName"></span>, and your Score is <span
+                            class="score"></span></div>
+                    <div class="p-2">And your guess is
+                        <button class="button btn btn-success" onClick="client.submitGuess(1,1)"
+                            id="submitButton10">1</button>
+                        <button class="button btn btn-success" onClick="client.submitGuess(1,2)"
+                            id="submitButton11">2</button>
+                        <button class="button btn btn-success" onClick="client.submitGuess(1,3)"
+                            id="submitButton12">3</button>
+                        <button class="button btn btn-success" onClick="client.submitGuess(1,4)"
+                            id="submitButton13">4</button>
+                        <button class="button btn btn-success" onClick="client.submitGuess(1,5)"
+                            id="submitButton14">5</button>
+                        <button class="button btn btn-success" onClick="client.submitGuess(1,6)"
+                            id="submitButton15">6</button>
+                        <button class="button btn btn-success" onClick="client.submitGuess(1,7)"
+                            id="submitButton16">7</button>
+                        <button class="button btn btn-success" onClick="client.submitGuess(1,8)"
+                            id="submitButton17">8</button>
+                        <button class="button btn btn-success" onClick="client.submitGuess(1,9)"
+                            id="submitButton18">9</button>
+                        <button class="button btn btn-success" onClick="client.submitGuess(1,10)"
+                            id="submitButton19">10</button>
+                        <span id="goodLuckMessage1" class="goodLuckMessage">Good Luck 🤞</span>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="m-2">
+                                <div id="resultAlert1" class="alert alert-info" role="alert">
+                                    <h1 class="alert-heading p-1 resultValue" id="resultValue1"></h1>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="m-2">
+                                <div id="winnerAlert1" class="alert alert-success p-3" role="alert">
+                                    <h4 class="alert-heading">You Win! 🏆</h4>
+                                    <p>You guessed the correct number</p>
+                                </div>
+                                <div id="looserAlert1" class="alert alert-danger p-3" role="alert">
+                                    <h4 class="alert-heading">You Loose! 👎</h4>
+                                    <p>You guessed incorrectly. Get back on your 🐎</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="gamePanel" id="gamePanel2">
+                    <h2 id="gameTitle">🥇Gold Game</h2>
+                    <span id="timer2" class="timer"></span>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="timerBar2"></div>
+                    </div>
+                    <div id="gamephase2" class="gamephase p-2">Choose Your Number</div>
+                    <div class="p-2">Your Screen Name is <span class="screenName"></span>, and your Score is <span
+                            class="score"></span></div>
+                    <div class="p-2">And your guess is
+                        <button class="button btn btn-success" onClick="client.submitGuess(2,1)"
+                            id="submitButton20">1</button>
+                        <button class="button btn btn-success" onClick="client.submitGuess(2,2)"
+                            id="submitButton21">2</button>
+                        <button class="button btn btn-success" onClick="client.submitGuess(2,3)"
+                            id="submitButton22">3</button>
+                        <button class="button btn btn-success" onClick="client.submitGuess(2,4)"
+                            id="submitButton23">4</button>
+                        <button class="button btn btn-success" onClick="client.submitGuess(2,5)"
+                            id="submitButton24">5</button>
+                        <button class="button btn btn-success" onClick="client.submitGuess(2,6)"
+                            id="submitButton25">6</button>
+                        <button class="button btn btn-success" onClick="client.submitGuess(2,7)"
+                            id="submitButton26">7</button>
+                        <button class="button btn btn-success" onClick="client.submitGuess(2,8)"
+                            id="submitButton27">8</button>
+                        <button class="button btn btn-success" onClick="client.submitGuess(2,9)"
+                            id="submitButton28">9</button>
+                        <button class="button btn btn-success" onClick="client.submitGuess(2,10)"
+                            id="submitButton29">10</button>
+                        <span id="goodLuckMessage2" class="goodLuckMessage">Good Luck 🤞</span>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="m-2">
+                                <div id="resultAlert2" class="alert alert-info" role="alert">
+                                    <h1 class="alert-heading p-1 resultValue" id="resultValue2"></h1>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="m-2">
+                                <div id="winnerAlert2" class="alert alert-success p-3" role="alert">
+                                    <h4 class="alert-heading">You Win! 🏆</h4>
+                                    <p>You guessed the correct number</p>
+                                </div>
+                                <div id="looserAlert2" class="alert alert-danger p-3" role="alert">
+                                    <h4 class="alert-heading">You Loose! 👎</h4>
+                                    <p>You guessed incorrectly. Get back on your 🐎</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="chatPanel">
+                    <ul id="messages" class="messages">
+                    </ul>
+                    <div class="chatMessageInputDiv">
+                        <div class="input-group">
+                            <input class="form-control width100" id="messageText" placeholder="Enter Chat Message"
+                                onkeyup="">
+                            <span class="input-group-btn">
+                                <button class="btn btn-info" onclick="client.sendMessage()">Send</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer text-center" style="margin-bottom:0">
+        This is an example game from the TypeScript SocketIO course at <a href="https://tssocktutorials.seanwasere.com"
+            target="_blank">https://tssocktutorials.seanwasere.com</a>
+    </div>
+
+    <script src="jquery/jquery.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script src="socket.io/socket.io.js"></script>
+    <script src="client.js"></script>
+</body>
+
+</html>
