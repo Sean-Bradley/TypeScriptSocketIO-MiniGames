@@ -1,28 +1,28 @@
-type GameState = {
-    id: number,
-    title: string,
-    gamePhase: number,
-    gameClock: number,
-    result: number,
-    winners: string[]
-    winnersCalculated: boolean,
-    duration: number
-}
-
-type ScreenName = {
-    name: string,
-    abbreviation: string
-}
-
 type ChatMessage = {
-    message: string,
-    from: string,
+    message: string
+    from: string
     type: "playerMessage" | "gameMessage"
 }
 
-interface Player {
+type GameState = {
+    id: number
+    title: string
+    gamePhase: number
+    gameClock: number
+    result: number
+    winners: string[]
+    winnersCalculated: boolean
+    duration: number
+}
+
+type Player = {
     score: number
     screenName: ScreenName
+}
+
+type ScreenName = {
+    name: string
+    abbreviation: string
 }
 
 class Client {

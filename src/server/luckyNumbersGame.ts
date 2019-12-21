@@ -1,17 +1,5 @@
 import Player from "./player"
 
-type GameState = {
-    id: number,
-    title: string,
-    logo: string,
-    gamePhase: number,
-    gameClock: number,
-    result: number,
-    winners: string[],
-    winnersCalculated: boolean,
-    duration: number
-}
-
 export default class LuckyNumbersGame {
     private _id: number
     private _title: string

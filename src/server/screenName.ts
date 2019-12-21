@@ -1,4 +1,4 @@
 type ScreenName = {
-    name: string,
+    name: string
     abbreviation: string
 }
