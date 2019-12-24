@@ -1,4 +1,4 @@
-interface IPlayer {
+type IPlayer = {
     score: number
     screenName: ScreenName
 }

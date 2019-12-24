@@ -13,34 +13,34 @@ const player_1 = __importDefault(require("./player"));
 const port = 3000;
 class App {
     constructor(port) {
-        this._games = {};
-        this._players = {};
+        this.games = {};
+        this.players = {};
         this.updateChat = (chatMessage) => {
-            this._io.emit('chatMessage', chatMessage);
+            this.io.emit('chatMessage', chatMessage);
         };
         this.sendPlayerDetails = (playerSocketId) => {
-            this._io.to(playerSocketId).emit("playerDetails", this._players[playerSocketId].player);
+            this.io.to(playerSocketId).emit("playerDetails", this.players[playerSocketId].player);
         };
-        this._port = port;
+        this.port = port;
         const app = express_1.default();
         app.use(express_1.default.static(path_1.default.join(__dirname, '../client')));
         app.use('/jquery', express_1.default.static(path_1.default.join(__dirname, '../../node_modules/jquery/dist')));
         app.use('/bootstrap', express_1.default.static(path_1.default.join(__dirname, '../../node_modules/bootstrap/dist')));
-        this._server = new http_1.default.Server(app);
-        this._io = socket_io_1.default(this._server);
-        this._games[0] = new luckyNumbersGame_1.default(0, "Bronze Game", "🥉", 10, 1, 10, this._players, this.updateChat, this.sendPlayerDetails);
-        this._games[1] = new luckyNumbersGame_1.default(1, "Silver Game", "🥈", 16, 2, 20, this._players, this.updateChat, this.sendPlayerDetails);
-        this._games[2] = new luckyNumbersGame_1.default(2, "Gold Game", "🥇", 35, 10, 100, this._players, this.updateChat, this.sendPlayerDetails);
-        this._randomScreenNameGenerator = new randomScreenNameGenerator_1.default();
-        this._io.on('connection', (socket) => {
+        this.server = new http_1.default.Server(app);
+        this.io = socket_io_1.default(this.server);
+        this.games[0] = new luckyNumbersGame_1.default(0, "Bronze Game", "🥉", 10, 1, 10, this.players, this.updateChat, this.sendPlayerDetails);
+        this.games[1] = new luckyNumbersGame_1.default(1, "Silver Game", "🥈", 16, 2, 20, this.players, this.updateChat, this.sendPlayerDetails);
+        this.games[2] = new luckyNumbersGame_1.default(2, "Gold Game", "🥇", 35, 10, 100, this.players, this.updateChat, this.sendPlayerDetails);
+        this.randomScreenNameGenerator = new randomScreenNameGenerator_1.default();
+        this.io.on('connection', (socket) => {
             console.log('a user connected : ' + socket.id);
-            let screenName = this._randomScreenNameGenerator.generateRandomScreenName();
-            this._players[socket.id] = new player_1.default(screenName);
-            socket.emit("playerDetails", this._players[socket.id].player);
+            let screenName = this.randomScreenNameGenerator.generateRandomScreenName();
+            this.players[socket.id] = new player_1.default(screenName);
+            socket.emit("playerDetails", this.players[socket.id].player);
             socket.on('disconnect', () => {
                 console.log('socket disconnected : ' + socket.id);
-                if (this._players && this._players[socket.id]) {
-                    delete this._players[socket.id];
+                if (this.players && this.players[socket.id]) {
+                    delete this.players[socket.id];
                 }
             });
             socket.on('chatMessage', function (chatMessage) {
@@ -48,19 +48,19 @@ class App {
             });
             socket.on('submitGuess', (gameId, guess) => {
                 if (guess >= 0 && guess <= 10) {
-                    if (this._games[gameId].submitGuess(socket.id, guess)) {
-                        socket.emit("confirmGuess", gameId, guess, this._players[socket.id].player.score);
+                    if (this.games[gameId].submitGuess(socket.id, guess)) {
+                        socket.emit("confirmGuess", gameId, guess, this.players[socket.id].player.score);
                     }
                 }
             });
         });
         setInterval(() => {
-            this._io.emit("GameStates", [this._games[0].gameState, this._games[1].gameState, this._games[2].gameState]);
+            this.io.emit("GameStates", [this.games[0].gameState, this.games[1].gameState, this.games[2].gameState]);
         }, 1000);
     }
     Start() {
-        this._server.listen(this._port);
-        console.log(`Server listening on port ${this._port}.`);
+        this.server.listen(this.port);
+        console.log(`Server listening on port ${this.port}.`);
     }
 }
 new App(port).Start();

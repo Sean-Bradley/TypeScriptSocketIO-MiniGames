@@ -26,31 +26,31 @@ type ScreenName = {
 }
 
 class Client {
-    private _socket: SocketIOClient.Socket
-    private _player: Player
-    private _inThisRound: boolean[] = [false, false, false]
-    private _alertedWinnersLoosers: boolean[] = [false, false, false]
+    private socket: SocketIOClient.Socket
+    private player: Player
+    private inThisRound: boolean[] = [false, false, false]
+    private alertedWinnersLoosers: boolean[] = [false, false, false]
 
     constructor() {
-        this._socket = io();
+        this.socket = io();
 
-        this._socket.on("connect", function () {
+        this.socket.on("connect", function () {
             console.log("connect")
         })
 
-        this._socket.on("disconnect", function (message: any) {
+        this.socket.on("disconnect", function (message: any) {
             console.log("disconnect " + message)
             location.reload();
         })
 
-        this._socket.on("GameStates", (gameStates: GameState[]) => {
+        this.socket.on("GameStates", (gameStates: GameState[]) => {
             //console.dir(gameStates)
             gameStates.forEach(gameState => {
                 let gid = gameState.id
                 if (gameState.gameClock >= 0) {
                     if (gameState.gameClock >= gameState.duration) {
                         $("#gamephase" + gid).text("New Game, Guess the Lucky Number")
-                        this._alertedWinnersLoosers[gid] = false
+                        this.alertedWinnersLoosers[gid] = false
                         for (let x = 0; x < 10; x++) {
                             $("#submitButton" + gid + x).prop("disabled", false);
                         }
@@ -75,15 +75,15 @@ class Client {
                     }
                     $("#goodLuckMessage" + gid).css("display", "none")
 
-                    if (this._inThisRound[gid] && !this._alertedWinnersLoosers[gid] && gameState.winnersCalculated) {
-                        this._inThisRound[gid] = false;
-                        if (gameState.winners.includes(this._socket.id)) {
+                    if (this.inThisRound[gid] && !this.alertedWinnersLoosers[gid] && gameState.winnersCalculated) {
+                        this.inThisRound[gid] = false;
+                        if (gameState.winners.includes(this.socket.id)) {
                             $('#winnerAlert' + gid).fadeIn(100)
                         } else {
                             $('#looserAlert' + gid).fadeIn(100)
                         }
 
-                        this._alertedWinnersLoosers[gid] = true
+                        this.alertedWinnersLoosers[gid] = true
                     }
                     if (gameState.gameClock === -2 && gameState.result !== -1) {
                         $('#resultValue' + gid).text(gameState.result)
@@ -97,29 +97,26 @@ class Client {
             })
         })
 
-        this._socket.on("playerDetails", (player: Player) => {
+        this.socket.on("playerDetails", (player: Player) => {
             //console.dir(player)
-            this._player = player
+            this.player = player
             $(".screenName").text(player.screenName.name)
             $(".score").text(player.score)
         })
 
-        this._socket.on("confirmGuess", (gameId: number, guess: number, score: number) => {
-            this._inThisRound[gameId] = true
+        this.socket.on("confirmGuess", (gameId: number, guess: number, score: number) => {
+            this.inThisRound[gameId] = true
             $("#submitButton" + gameId + (guess - 1)).prop("disabled", true);
             $("#goodLuckMessage" + gameId).css("display", "inline-block")
             $(".score").text(score)
         })
 
-        this._socket.on("chatMessage", (chatMessage: ChatMessage) => {
-            let ul = document.getElementById("messages")
-            let li = document.createElement("li")
+        this.socket.on("chatMessage", (chatMessage: ChatMessage) => {
             if (chatMessage.type === "gameMessage") {
-                li.innerHTML = "<span class='float-left'><span class='circle'>" + chatMessage.from + "</span></span><div class='gameMessage'>" + chatMessage.message + "</div>"
+                $("#messages").append("<li><span class='float-right'><span class='circle'>" + chatMessage.from + "</span></span><div class='gameMessage'>" + chatMessage.message + "</div></li>")
             } else {
-                li.innerHTML = "<span class='float-right'><span class='circle'>" + chatMessage.from + "</span></span><div class='otherMessage'>" + chatMessage.message + "</div>"
+                $("#messages").append("<li><span class='float-right'><span class='circle'>" + chatMessage.from + "</span></span><div class='otherMessage'>" + chatMessage.message + "</div></li>")
             }
-            ul.appendChild(li)
             this.scrollChatWindow()
         })
 
@@ -150,24 +147,7 @@ class Client {
     }
 
     public submitGuess(gameId: number, guess: number) {
-        this._socket.emit("submitGuess", gameId, guess)
-    }
-
-    public sendMessage() {
-        let messageText = $("#messageText").val();
-        if (messageText.toString().length > 0) {
-
-            this._socket.emit("chatMessage", <ChatMessage>{ message: messageText, from: this._player.screenName.abbreviation })
-
-            let ul = document.getElementById("messages");
-            let li = document.createElement("li");
-            li.innerHTML = "<span class='float-left'><span class='circle'>" + this._player.screenName.abbreviation + "</span></span><div class='myMessage'>" + messageText + "</div>"
-            ul.appendChild(li);
-
-            this.scrollChatWindow()
-
-            $("#messageText").val("");
-        }
+        this.socket.emit("submitGuess", gameId, guess)
     }
 
     private scrollChatWindow = () => {
@@ -180,6 +160,19 @@ class Client {
                 messagesLength.eq(0).remove();
             }
         }, 500)
+    }
+
+    public sendMessage() {
+        let messageText = $("#messageText").val();
+        if (messageText.toString().length > 0) {
+
+            this.socket.emit("chatMessage", <ChatMessage>{ message: messageText, from: this.player.screenName.abbreviation })
+
+            $("#messages").append("<li><span class='float-left'><span class='circle'>" + this.player.screenName.abbreviation + "</span></span><div class='myMessage'>" + messageText + "</div></li>")
+            this.scrollChatWindow()
+
+            $("#messageText").val("");
+        }
     }
 
     public showGame(id: number) {
