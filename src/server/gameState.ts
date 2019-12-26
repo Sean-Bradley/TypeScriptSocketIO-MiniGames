@@ -4,8 +4,8 @@ type GameState = {
     logo: string
     gamePhase: number
     gameClock: number
-    result: number
     winners: string[]
     winnersCalculated: boolean
-    duration: number
+    duration: number    
+    result: number
 }

@@ -8,21 +8,21 @@ type GameState = {
     id: number
     title: string
     gamePhase: number
-    gameClock: number
-    result: number
+    gameClock: number    
     winners: string[]
     winnersCalculated: boolean
     duration: number
-}
-
-type Player = {
-    score: number
-    screenName: ScreenName
+    result: number
 }
 
 type ScreenName = {
     name: string
     abbreviation: string
+}
+
+type Player = {
+    score: number
+    screenName: ScreenName
 }
 
 class Client {
@@ -62,9 +62,9 @@ class Client {
                     }
                     $("#timer" + gid).css("display", "block")
                     $("#timer" + gid).text(gameState.gameClock.toString())
-                    var progressPerent = (gameState.gameClock / gameState.duration) * 100;
+                    var progressParent = (gameState.gameClock / gameState.duration) * 100;
                     $("#timerBar" + gid).css("background-color", "#4caf50")
-                    $("#timerBar" + gid).css("width", progressPerent + "%")
+                    $("#timerBar" + gid).css("width", progressParent + "%")
                 } else {
                     $("#timerBar" + gid).css("background-color", "#ff0000")
                     $("#timerBar" + gid).css("width", "100%")
@@ -113,7 +113,7 @@ class Client {
 
         this.socket.on("chatMessage", (chatMessage: ChatMessage) => {
             if (chatMessage.type === "gameMessage") {
-                $("#messages").append("<li><span class='float-right'><span class='circle'>" + chatMessage.from + "</span></span><div class='gameMessage'>" + chatMessage.message + "</div></li>")
+                $("#messages").append("<li><span class='float-left'><span class='circle'>" + chatMessage.from + "</span></span><div class='gameMessage'>" + chatMessage.message + "</div></li>")
             } else {
                 $("#messages").append("<li><span class='float-right'><span class='circle'>" + chatMessage.from + "</span></span><div class='otherMessage'>" + chatMessage.message + "</div></li>")
             }

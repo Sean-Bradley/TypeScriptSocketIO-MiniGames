@@ -15,7 +15,7 @@ export default class LuckyNumbersGame {
     private _winPoints: number
     private _winners: string[]
     private _winnersCalculated: boolean = false
-    private _updateChatCB: (chatMessage: ChatMessage) => void
+    private _updateChatCallBack: (chatMessage: ChatMessage) => void
     private _sendPlayerDetailsCB: (playerSocketID: string) => void
 
     constructor(id: number,
@@ -25,7 +25,7 @@ export default class LuckyNumbersGame {
         enterPoints: number,
         winPoints: number,
         players: { [id: string]: Player },
-        updateChatCB: (chatMessage: ChatMessage) => void,
+        updateChatCallBack: (chatMessage: ChatMessage) => void,
         sendPlayerDetailsCB: (playerSocketID: string) => void
     ) {
         this._id = id
@@ -34,7 +34,7 @@ export default class LuckyNumbersGame {
         this._duration = duration
         this._enterPoints = enterPoints
         this._winPoints = winPoints
-        this._updateChatCB = updateChatCB
+        this._updateChatCallBack = updateChatCallBack
         this._sendPlayerDetailsCB = sendPlayerDetailsCB
         this._players = players
 
@@ -46,17 +46,17 @@ export default class LuckyNumbersGame {
                 this._winners = []
                 this._winnersCalculated = false
                 this._guesses = {}
-                this._updateChatCB(<ChatMessage>{ message: "New Game", from: this._logo, type: "gameMessage" })
+                this._updateChatCallBack(<ChatMessage>{ message: "New Game", from: this._logo, type: "gameMessage" })
             } else if (this._gamePhase === 1) {
                 if (this._gameClock < 0) {
                     this._gamePhase = 2
-                    this._updateChatCB(<ChatMessage>{ message: "Game Closed", from: this._logo, type: "gameMessage" })
+                    this._updateChatCallBack(<ChatMessage>{ message: "Game Closed", from: this._logo, type: "gameMessage" })
                 }
             } else if (this._gamePhase === 2) {
                 if (this._gameClock === -2) {
                     //calc a random number       
                     this._result = (Math.floor(Math.random() * 10) + 1)
-                    this._updateChatCB(<ChatMessage>{ message: "Result : " + this._result, from: this._logo, type: "gameMessage" })
+                    this._updateChatCallBack(<ChatMessage>{ message: "Result : " + this._result, from: this._logo, type: "gameMessage" })
                 } else if (this._gameClock === -3) {
                     //get winners   
                     this._winners = this.calculateWinners(this._result)
@@ -69,7 +69,7 @@ export default class LuckyNumbersGame {
                     this._gamePhase = 0
                 }
             }
-            this._gameState = { id: this._id, title: this._title, logo: this._logo, gamePhase: this._gamePhase, gameClock: this._gameClock, winners: this._winners, result: this._result, winnersCalculated: this._winnersCalculated, duration: this._duration }
+            this._gameState = { id: this._id, title: this._title, logo: this._logo, gamePhase: this._gamePhase, gameClock: this._gameClock, winners: this._winners, winnersCalculated: this._winnersCalculated, duration: this._duration, result: this._result }
             this._gameClock -= 1
         }, 1000)
     }
@@ -86,7 +86,7 @@ export default class LuckyNumbersGame {
         this._guesses[playerSocketId].push(guess)
         if (this._guesses[playerSocketId].length === 1) {
             let chatMessage = <ChatMessage>{ message: this._players[playerSocketId].screenName.name + " is playing", from: this._logo, type: "gameMessage" }
-            this._updateChatCB(chatMessage)
+            this._updateChatCallBack(chatMessage)
         }
         return true;
     }
