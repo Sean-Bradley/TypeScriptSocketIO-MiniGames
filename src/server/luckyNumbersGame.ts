@@ -7,10 +7,10 @@ export default class LuckyNumbersGame {
     private _gamePhase: number = 0
     private _gameClock: number = 0
     private _gameState: GameState
-    private _players: { [id: string]: Player } = {}
     private _duration: number
-    private _guesses: { [id: string]: number[] } = {}
     private _result: number = -1
+    private _players: { [id: string]: Player } = {}
+    private _guesses: { [id: string]: number[] } = {}    
     private _enterPoints: number
     private _winPoints: number
     private _winners: string[]
@@ -32,11 +32,12 @@ export default class LuckyNumbersGame {
         this._title = title
         this._logo = logo
         this._duration = duration
+        this._players = players
         this._enterPoints = enterPoints
         this._winPoints = winPoints
         this._updateChatCallBack = updateChatCallBack
         this._sendPlayerDetailsCB = sendPlayerDetailsCB
-        this._players = players
+        
 
         setInterval(() => {
             if (this._gamePhase === 0) {
@@ -69,7 +70,7 @@ export default class LuckyNumbersGame {
                     this._gamePhase = 0
                 }
             }
-            this._gameState = { id: this._id, title: this._title, logo: this._logo, gamePhase: this._gamePhase, gameClock: this._gameClock, winners: this._winners, winnersCalculated: this._winnersCalculated, duration: this._duration, result: this._result }
+            this._gameState = { id: this._id, title: this._title, logo: this._logo, gamePhase: this._gamePhase, gameClock: this._gameClock, duration: this._duration, result: this._result, winners: this._winners, winnersCalculated: this._winnersCalculated }
             this._gameClock -= 1
         }, 1000)
     }

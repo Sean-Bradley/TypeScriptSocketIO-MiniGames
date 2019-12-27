@@ -8,11 +8,11 @@ type GameState = {
     id: number
     title: string
     gamePhase: number
-    gameClock: number    
-    winners: string[]
-    winnersCalculated: boolean
+    gameClock: number        
     duration: number
     result: number
+    winners: string[]
+    winnersCalculated: boolean
 }
 
 type ScreenName = {
@@ -74,7 +74,7 @@ class Client {
                         $("#submitButton" + gid + x).prop("disabled", true);
                     }
                     $("#goodLuckMessage" + gid).css("display", "none")
-
+                    
                     if (this.inThisRound[gid] && !this.alertedWinnersLoosers[gid] && gameState.winnersCalculated) {
                         this.inThisRound[gid] = false;
                         if (gameState.winners.includes(this.socket.id)) {
@@ -85,6 +85,7 @@ class Client {
 
                         this.alertedWinnersLoosers[gid] = true
                     }
+
                     if (gameState.gameClock === -2 && gameState.result !== -1) {
                         $('#resultValue' + gid).text(gameState.result)
                         $('#resultAlert' + gid).fadeIn(100)
@@ -126,14 +127,15 @@ class Client {
             $('#resultValue1').addClass('spinner');
             $('#resultValue2').addClass('spinner');
             $('#resultAlert0').alert().hide()
-            $('#winnerAlert0').alert().hide()
-            $('#looserAlert0').alert().hide()
             $('#resultAlert1').alert().hide()
-            $('#winnerAlert1').alert().hide()
-            $('#looserAlert1').alert().hide()
             $('#resultAlert2').alert().hide()
+            $('#winnerAlert0').alert().hide()
+            $('#winnerAlert1').alert().hide()
             $('#winnerAlert2').alert().hide()
+            $('#looserAlert0').alert().hide()
+            $('#looserAlert1').alert().hide()
             $('#looserAlert2').alert().hide()
+            
 
             $('#messageText').keypress((e) => {
                 var key = e.which;
