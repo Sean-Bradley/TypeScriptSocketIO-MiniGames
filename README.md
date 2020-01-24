@@ -1,7 +1,8 @@
 # TypeScript SocketIO MiniGames
 The MiniGames project which is created during my TypeScript SocketIO Course at [https://sbcode.net/tssock/](https://sbcode.net/tssock/)
 
-[![TypeScript SocketIO Introduction](https://img.youtube.com/vi/3uLSNctzkkw/0.jpg)](https://youtu.be/3uLSNctzkkw)
+[![TypeScript SocketIO Introduction](tssock-course.png)](https://youtu.be/3uLSNctzkkw)
+
 
 ```bash
 npm install
