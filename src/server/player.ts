@@ -1,9 +1,4 @@
-interface IPlayer {
-    score: number
-    screenName: ScreenName
-}
-
-export default class Player implements IPlayer {
+export default class Player implements Player {
     private _score: number = 0
     private _screenName: ScreenName
 
@@ -19,8 +14,8 @@ export default class Player implements IPlayer {
         return this._screenName
     }
 
-    public get player(): IPlayer {
-        return <IPlayer>{ score: this._score, screenName: this._screenName }
+    public get player(): Player {
+        return <Player>{ score: this._score, screenName: this._screenName }
     }
 
     public adjustScore(amount: number) {

@@ -5,6 +5,6 @@
     "outDir": "../../dist/client/"
   },
   "include": [
-    "**/*.ts"
+    "**/*.ts", "../typings/*.ts"
   ]
 }

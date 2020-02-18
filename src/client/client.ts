@@ -1,30 +1,3 @@
-type ChatMessage = {
-    message: string
-    from: string
-    type: "playerMessage" | "gameMessage"
-}
-
-type GameState = {
-    id: number
-    title: string
-    gamePhase: number
-    gameClock: number        
-    duration: number
-    result: number
-    winners: string[]
-    winnersCalculated: boolean
-}
-
-type ScreenName = {
-    name: string
-    abbreviation: string
-}
-
-type Player = {
-    score: number
-    screenName: ScreenName
-}
-
 class Client {
     private socket: SocketIOClient.Socket
     private player: Player
