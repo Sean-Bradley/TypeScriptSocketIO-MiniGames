@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES3",
     "module": "commonjs",
-    "outDir": "../../dist/client/"
+    "outDir": "../../dist"
   },
   "include": [
     "**/*.ts", "../typings/*.ts"
