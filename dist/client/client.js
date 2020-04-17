@@ -41,9 +41,9 @@ var Client = /** @class */ (function () {
                     }
                     $("#timer" + gid).css("display", "block");
                     $("#timer" + gid).text(gameState.gameClock.toString());
-                    var progressPerent = (gameState.gameClock / gameState.duration) * 100;
+                    var progressParent = (gameState.gameClock / gameState.duration) * 100;
                     $("#timerBar" + gid).css("background-color", "#4caf50");
-                    $("#timerBar" + gid).css("width", progressPerent + "%");
+                    $("#timerBar" + gid).css("width", progressParent + "%");
                 }
                 else {
                     $("#timerBar" + gid).css("background-color", "#ff0000");
@@ -89,7 +89,7 @@ var Client = /** @class */ (function () {
         });
         this.socket.on("chatMessage", function (chatMessage) {
             if (chatMessage.type === "gameMessage") {
-                $("#messages").append("<li><span class='float-right'><span class='circle'>" + chatMessage.from + "</span></span><div class='gameMessage'>" + chatMessage.message + "</div></li>");
+                $("#messages").append("<li><span class='float-left'><span class='circle'>" + chatMessage.from + "</span></span><div class='gameMessage'>" + chatMessage.message + "</div></li>");
             }
             else {
                 $("#messages").append("<li><span class='float-right'><span class='circle'>" + chatMessage.from + "</span></span><div class='otherMessage'>" + chatMessage.message + "</div></li>");
@@ -101,13 +101,13 @@ var Client = /** @class */ (function () {
             $('#resultValue1').addClass('spinner');
             $('#resultValue2').addClass('spinner');
             $('#resultAlert0').alert().hide();
-            $('#winnerAlert0').alert().hide();
-            $('#looserAlert0').alert().hide();
             $('#resultAlert1').alert().hide();
-            $('#winnerAlert1').alert().hide();
-            $('#looserAlert1').alert().hide();
             $('#resultAlert2').alert().hide();
+            $('#winnerAlert0').alert().hide();
+            $('#winnerAlert1').alert().hide();
             $('#winnerAlert2').alert().hide();
+            $('#looserAlert0').alert().hide();
+            $('#looserAlert1').alert().hide();
             $('#looserAlert2').alert().hide();
             $('#messageText').keypress(function (e) {
                 var key = e.which;
@@ -153,4 +153,3 @@ var Client = /** @class */ (function () {
     return Client;
 }());
 var client = new Client();
-//# sourceMappingURL=client.js.map
