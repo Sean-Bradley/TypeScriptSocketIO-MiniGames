@@ -10,7 +10,7 @@ export default class LuckyNumbersGame {
     private _duration: number
     private _result: number = -1
     private _players: { [id: string]: Player } = {}
-    private _guesses: { [id: string]: number[] } = {}    
+    private _guesses: { [id: string]: number[] } = {}
     private _enterPoints: number
     private _winPoints: number
     private _winners: string[]
@@ -37,7 +37,7 @@ export default class LuckyNumbersGame {
         this._winPoints = winPoints
         this._updateChatCallBack = updateChatCallBack
         this._sendPlayerDetailsCB = sendPlayerDetailsCB
-        
+
 
         setInterval(() => {
             if (this._gamePhase === 0) {
@@ -62,8 +62,12 @@ export default class LuckyNumbersGame {
                     //get winners   
                     this._winners = this.calculateWinners(this._result)
                     this._winners.forEach(w => {
-                        this._players[w].adjustScore(this._winPoints)
-                        this._sendPlayerDetailsCB(w)
+                        if (this._players[w]) {
+                            this._players[w].adjustScore(this._winPoints)
+                            this._sendPlayerDetailsCB(w)
+                        } else {
+                            console.log(w + " has disconnected")
+                        }
                     })
                     this._winnersCalculated = true
                 } else if (this._gameClock <= -5) {
