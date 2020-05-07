@@ -65,8 +65,6 @@ export default class LuckyNumbersGame {
                         if (this._players[w]) {
                             this._players[w].adjustScore(this._winPoints)
                             this._sendPlayerDetailsCB(w)
-                        } else {
-                            console.log(w + " has disconnected")
                         }
                     })
                     this._winnersCalculated = true
