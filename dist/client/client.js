@@ -1,6 +1,8 @@
+"use strict";
 var Client = /** @class */ (function () {
     function Client() {
         var _this = this;
+        this.player = { score: 0, screenName: { name: "", abbreviation: "" } };
         this.inThisRound = [false, false, false];
         this.alertedWinnersLoosers = [false, false, false];
         this.scrollChatWindow = function () {

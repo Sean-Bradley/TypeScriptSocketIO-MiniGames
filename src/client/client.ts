@@ -8,7 +8,7 @@ type GameState = {
     id: number
     title: string
     gamePhase: number
-    gameClock: number        
+    gameClock: number
     duration: number
     result: number
     winners: string[]
@@ -27,7 +27,7 @@ type Player = {
 
 class Client {
     private socket: SocketIOClient.Socket
-    private player: Player
+    private player: Player = { score: 0, screenName: { name: "", abbreviation: "" } }
     private inThisRound: boolean[] = [false, false, false]
     private alertedWinnersLoosers: boolean[] = [false, false, false]
 
@@ -74,7 +74,7 @@ class Client {
                         $("#submitButton" + gid + x).prop("disabled", true);
                     }
                     $("#goodLuckMessage" + gid).css("display", "none")
-                    
+
                     if (this.inThisRound[gid] && !this.alertedWinnersLoosers[gid] && gameState.winnersCalculated) {
                         this.inThisRound[gid] = false;
                         if (gameState.winners.includes(this.socket.id)) {
@@ -135,7 +135,7 @@ class Client {
             $('#looserAlert0').alert().hide()
             $('#looserAlert1').alert().hide()
             $('#looserAlert2').alert().hide()
-            
+
 
             $('#messageText').keypress((e) => {
                 var key = e.which;
@@ -165,7 +165,7 @@ class Client {
     }
 
     public sendMessage() {
-        let messageText = $("#messageText").val();
+        let messageText = $("#messageText").val() as string;
         if (messageText.toString().length > 0) {
 
             this.socket.emit("chatMessage", <ChatMessage>{ message: messageText, from: this.player.screenName.abbreviation })
