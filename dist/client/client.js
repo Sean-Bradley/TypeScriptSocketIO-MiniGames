@@ -1,15 +1,15 @@
-var Client = /** @class */ (function () {
-    function Client() {
-        var _this = this;
+"use strict";
+class Client {
+    constructor() {
         this.player = { score: 0, screenName: { name: "", abbreviation: "" } };
         this.inThisRound = [false, false, false];
         this.alertedWinnersLoosers = [false, false, false];
-        this.scrollChatWindow = function () {
+        this.scrollChatWindow = () => {
             $('#messages').animate({
                 scrollTop: $('#messages li:last-child').position().top
             }, 500);
-            setTimeout(function () {
-                var messagesLength = $("#messages li");
+            setTimeout(() => {
+                let messagesLength = $("#messages li");
                 if (messagesLength.length > 10) {
                     messagesLength.eq(0).remove();
                 }
@@ -23,15 +23,15 @@ var Client = /** @class */ (function () {
             console.log("disconnect " + message);
             location.reload();
         });
-        this.socket.on("GameStates", function (gameStates) {
+        this.socket.on("GameStates", (gameStates) => {
             //console.dir(gameStates)
-            gameStates.forEach(function (gameState) {
-                var gid = gameState.id;
+            gameStates.forEach(gameState => {
+                let gid = gameState.id;
                 if (gameState.gameClock >= 0) {
                     if (gameState.gameClock >= gameState.duration) {
                         $("#gamephase" + gid).text("New Game, Guess the Lucky Number");
-                        _this.alertedWinnersLoosers[gid] = false;
-                        for (var x = 0; x < 10; x++) {
+                        this.alertedWinnersLoosers[gid] = false;
+                        for (let x = 0; x < 10; x++) {
                             $("#submitButton" + gid + x).prop("disabled", false);
                         }
                     }
@@ -51,53 +51,53 @@ var Client = /** @class */ (function () {
                     $("#timerBar" + gid).css("width", "100%");
                     $("#timer" + gid).css("display", "none");
                     $("#gamephase" + gid).text("Game Closed");
-                    for (var x = 0; x < 10; x++) {
+                    for (let x = 0; x < 10; x++) {
                         $("#submitButton" + gid + x).prop("disabled", true);
                     }
                     $("#goodLuckMessage" + gid).css("display", "none");
-                    if (_this.inThisRound[gid] && !_this.alertedWinnersLoosers[gid] && gameState.winnersCalculated) {
-                        _this.inThisRound[gid] = false;
-                        if (gameState.winners.includes(_this.socket.id)) {
+                    if (this.inThisRound[gid] && !this.alertedWinnersLoosers[gid] && gameState.winnersCalculated) {
+                        this.inThisRound[gid] = false;
+                        if (gameState.winners.includes(this.socket.id)) {
                             $('#winnerAlert' + gid).fadeIn(100);
                         }
                         else {
                             $('#looserAlert' + gid).fadeIn(100);
                         }
-                        _this.alertedWinnersLoosers[gid] = true;
+                        this.alertedWinnersLoosers[gid] = true;
                     }
                     if (gameState.gameClock === -2 && gameState.result !== -1) {
                         $('#resultValue' + gid).text(gameState.result);
                         $('#resultAlert' + gid).fadeIn(100);
                         $('#submitButton' + gid + (gameState.result - 1)).css("animation", "glowing 1000ms infinite");
-                        setTimeout(function () {
+                        setTimeout(() => {
                             $('#submitButton' + gid + (gameState.result - 1)).css("animation", "");
                         }, 4000);
                     }
                 }
             });
         });
-        this.socket.on("playerDetails", function (player) {
+        this.socket.on("playerDetails", (player) => {
             //console.dir(player)
-            _this.player = player;
+            this.player = player;
             $(".screenName").text(player.screenName.name);
             $(".score").text(player.score);
         });
-        this.socket.on("confirmGuess", function (gameId, guess, score) {
-            _this.inThisRound[gameId] = true;
+        this.socket.on("confirmGuess", (gameId, guess, score) => {
+            this.inThisRound[gameId] = true;
             $("#submitButton" + gameId + (guess - 1)).prop("disabled", true);
             $("#goodLuckMessage" + gameId).css("display", "inline-block");
             $(".score").text(score);
         });
-        this.socket.on("chatMessage", function (chatMessage) {
+        this.socket.on("chatMessage", (chatMessage) => {
             if (chatMessage.type === "gameMessage") {
                 $("#messages").append("<li><span class='float-left'><span class='circle'>" + chatMessage.from + "</span></span><div class='gameMessage'>" + chatMessage.message + "</div></li>");
             }
             else {
                 $("#messages").append("<li><span class='float-right'><span class='circle'>" + chatMessage.from + "</span></span><div class='otherMessage'>" + chatMessage.message + "</div></li>");
             }
-            _this.scrollChatWindow();
+            this.scrollChatWindow();
         });
-        $(document).ready(function () {
+        $(document).ready(() => {
             $('#resultValue0').addClass('spinner');
             $('#resultValue1').addClass('spinner');
             $('#resultValue2').addClass('spinner');
@@ -110,29 +110,29 @@ var Client = /** @class */ (function () {
             $('#looserAlert0').alert().hide();
             $('#looserAlert1').alert().hide();
             $('#looserAlert2').alert().hide();
-            $('#messageText').keypress(function (e) {
+            $('#messageText').keypress((e) => {
                 var key = e.which;
                 if (key == 13) // the enter key code
                  {
-                    _this.sendMessage();
+                    this.sendMessage();
                     return false;
                 }
             });
         });
     }
-    Client.prototype.submitGuess = function (gameId, guess) {
+    submitGuess(gameId, guess) {
         this.socket.emit("submitGuess", gameId, guess);
-    };
-    Client.prototype.sendMessage = function () {
-        var messageText = $("#messageText").val();
+    }
+    sendMessage() {
+        let messageText = $("#messageText").val();
         if (messageText.toString().length > 0) {
             this.socket.emit("chatMessage", { message: messageText, from: this.player.screenName.abbreviation });
             $("#messages").append("<li><span class='float-left'><span class='circle'>" + this.player.screenName.abbreviation + "</span></span><div class='myMessage'>" + messageText + "</div></li>");
             this.scrollChatWindow();
             $("#messageText").val("");
         }
-    };
-    Client.prototype.showGame = function (id) {
+    }
+    showGame(id) {
         switch (id) {
             case 0:
                 $("#gamePanel1").fadeOut(100);
@@ -150,7 +150,6 @@ var Client = /** @class */ (function () {
                 $("#gamePanel2").delay(100).fadeIn(100);
                 break;
         }
-    };
-    return Client;
-}());
-var client = new Client();
+    }
+}
+const client = new Client();
