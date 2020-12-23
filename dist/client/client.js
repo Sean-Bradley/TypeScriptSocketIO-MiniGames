@@ -1,4 +1,3 @@
-"use strict";
 var Client = /** @class */ (function () {
     function Client() {
         var _this = this;

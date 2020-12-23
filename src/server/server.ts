@@ -26,7 +26,7 @@ class App {
         app.use('/bootstrap', express.static(path.join(__dirname, '../../node_modules/bootstrap/dist')))
 
         this.server = new http.Server(app)
-        this.io = socketIO(this.server)
+        this.io = new socketIO.Server(this.server)
 
         this.games[0] = new LuckyNumbersGame(0, "Bronze Game", "🥉", 10, 1, 10, this.players, this.updateChat, this.sendPlayerDetails)
         this.games[1] = new LuckyNumbersGame(1, "Silver Game", "🥈", 16, 2, 20, this.players, this.updateChat, this.sendPlayerDetails)
