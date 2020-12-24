@@ -27,7 +27,7 @@ class App {
         app.use('/jquery', express_1.default.static(path_1.default.join(__dirname, '../../node_modules/jquery/dist')));
         app.use('/bootstrap', express_1.default.static(path_1.default.join(__dirname, '../../node_modules/bootstrap/dist')));
         this.server = new http_1.default.Server(app);
-        this.io = socket_io_1.default(this.server);
+        this.io = new socket_io_1.default.Server(this.server);
         this.games[0] = new luckyNumbersGame_1.default(0, "Bronze Game", "🥉", 10, 1, 10, this.players, this.updateChat, this.sendPlayerDetails);
         this.games[1] = new luckyNumbersGame_1.default(1, "Silver Game", "🥈", 16, 2, 20, this.players, this.updateChat, this.sendPlayerDetails);
         this.games[2] = new luckyNumbersGame_1.default(2, "Gold Game", "🥇", 35, 10, 100, this.players, this.updateChat, this.sendPlayerDetails);

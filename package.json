@@ -18,8 +18,8 @@
     "@types/socket.io-client": "^1.4.32",
     "bootstrap": "^4.4.1",
     "express": "^4.17.1",
-    "jquery": "^3.4.1",
-    "socket.io": "^2.3.0"
+    "jquery": "^3.5.1",
+    "socket.io": "^3.0.4"
   },
   "devDependencies": {
     "concurrently": "^5.0.1",

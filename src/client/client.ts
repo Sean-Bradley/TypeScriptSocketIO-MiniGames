@@ -1,6 +1,6 @@
 class Client {
     private socket: SocketIOClient.Socket
-    private player: Player
+    private player: Player = { score: 0, screenName: { name: "", abbreviation: "" } }
     private inThisRound: boolean[] = [false, false, false]
     private alertedWinnersLoosers: boolean[] = [false, false, false]
 
@@ -138,7 +138,7 @@ class Client {
     }
 
     public sendMessage() {
-        let messageText = $("#messageText").val();
+        let messageText = $("#messageText").val() as string;
         if (messageText.toString().length > 0) {
 
             this.socket.emit("chatMessage", <ChatMessage>{ message: messageText, from: this.player.screenName.abbreviation })

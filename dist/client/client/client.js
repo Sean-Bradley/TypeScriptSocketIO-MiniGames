@@ -1,5 +1,7 @@
+"use strict";
 class Client {
     constructor() {
+        this.player = { score: 0, screenName: { name: "", abbreviation: "" } };
         this.inThisRound = [false, false, false];
         this.alertedWinnersLoosers = [false, false, false];
         this.scrollChatWindow = () => {
