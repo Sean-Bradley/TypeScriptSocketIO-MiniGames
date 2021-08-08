@@ -1,8 +1,8 @@
 class Client {
-    private socket: SocketIOClient.Socket
-    private player: Player = { score: 0, screenName: { name: "", abbreviation: "" } }
-    private inThisRound: boolean[] = [false, false, false]
-    private alertedWinnersLoosers: boolean[] = [false, false, false]
+private socket: SocketIOClient.Socket
+private player: Player = { score: 0, screenName: { name: "", abbreviation: "" } }
+private inThisRound: boolean[] = [false, false, false]
+private alertedWinnersLoosers: boolean[] = [false, false, false]
 
     constructor() {
         this.socket = io();
@@ -47,7 +47,7 @@ class Client {
                         $("#submitButton" + gid + x).prop("disabled", true);
                     }
                     $("#goodLuckMessage" + gid).css("display", "none")
-                    
+
                     if (this.inThisRound[gid] && !this.alertedWinnersLoosers[gid] && gameState.winnersCalculated) {
                         this.inThisRound[gid] = false;
                         if (gameState.winners.includes(this.socket.id)) {
@@ -108,7 +108,7 @@ class Client {
             $('#looserAlert0').alert().hide()
             $('#looserAlert1').alert().hide()
             $('#looserAlert2').alert().hide()
-            
+
 
             $('#messageText').keypress((e) => {
                 var key = e.which;
@@ -169,6 +169,7 @@ class Client {
                 break;
         }
     }
+
 }
 
 const client = new Client();
