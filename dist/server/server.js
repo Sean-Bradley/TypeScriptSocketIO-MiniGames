@@ -22,7 +22,7 @@ class App {
             this.io.to(playerSocketId).emit("playerDetails", this.players[playerSocketId].player);
         };
         this.port = port;
-        const app = express_1.default();
+        const app = (0, express_1.default)();
         app.use(express_1.default.static(path_1.default.join(__dirname, '../client')));
         app.use('/jquery', express_1.default.static(path_1.default.join(__dirname, '../../node_modules/jquery/dist')));
         app.use('/bootstrap', express_1.default.static(path_1.default.join(__dirname, '../../node_modules/bootstrap/dist')));
